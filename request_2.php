@@ -9,7 +9,7 @@ if(isset($_POST['run']))
 {
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('SELECT c.Name, c.IdChenil, l.locationName, comp.companyName FROM chenil c JOIN location l ON c.IdLocation = l.IdLocation JOIN company comp ON comp.IdCompany = l.IdCompany');
+    $request = $db->prepare('SELECT c.chenilName, c.IdChenil, l.locationName, comp.companyName FROM chenil c JOIN location l ON c.IdLocation = l.IdLocation JOIN company comp ON comp.IdCompany = l.IdCompany');
     $request->execute();
     $rows = $request->fetchAll();
 }
@@ -49,7 +49,7 @@ if(isset($_POST['run']))
     ?>
                 <tr>
                     <td><?= $row['IdChenil']; ?></td>
-                    <td><?= $row['Name']; ?></td>
+                    <td><?= $row['chenilName']; ?></td>
                     <td><?= $row['companyName']; ?></td>
                     <td><?= $row['locationName']; ?></td>
                 </tr>
