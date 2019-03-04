@@ -7,31 +7,51 @@ $showResult = false;
 
 if(isset($_POST['run']))
 {
-    $chenil = $_POST['chenil'];
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('SELECT cat.categoryName, a.IdAnimal, a.animalName, c.chenilName, a.ArrivedAt, d.donatorName FROM animals a JOIN donators d ON d.IdDonator = a.IdDonator JOIN chenil c ON c.IdChenil = a.IdChenil JOIN categories cat ON cat.IdCategory = a.IdCategory WHERE c.chenilName = ?');
-    $request->execute(array($chenil));
-    $rows = $request->fetchAll();
+    $date_1 = $_POST['date_1'];
+    $date_2 = $_POST['date_2'];
+
+
+    $sql = 'SELECT d.GivenAt, r.raceName, d.donatorName, a.IdAnimal, a.animalName, cat.categoryName 
+            FROM animals a 
+            JOIN categories cat 
+            ON a.IdCategory = cat.IdCategory 
+            JOIN donators d 
+            ON d.IdDonator = a.IdDonator 
+            JOIN races r 
+            ON r.IdRace = a.IdRace 
+            WHERE d.GivenAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '" 
+            ORDER BY d.GivenAt';
+    $request = $db->prepare($sql);
+    $request->execute();
+    $rows = $request->fetchAll();    
 }
 
 ?>
 
 <div class="container">
 
-    <h1>Request 3</h1>
+    <h1>Request 4</h1>
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h2>See animals informations</h2>
+    <h3>On cherche à connaitre les infos suivantes pour les animaux arrivés entre deux dates (définies par l'utilisateur) : </h3>
+        <ul>
+            <li>Nom de l'animal</li>
+            <li>Catégorie de l'animal</li>
+            <li>Race de l'animal</li>
+            <li>Nom du donator</li>
+            <li>Date d'arrivée de l'animal</li>
+        </ul>
+    </h3>
 
     <form action="" method="POST">
-        <label for="chenil">Chenil:</label>
-            <select id="chenil" name="chenil">
-                <option value="PetHeaven - Bordeaux">PetHeaven - Bordeaux</option>
-                <option value="PetHeaven - Marseille">PetHeaven - Marseille</option>
-                <option value="PetHeaven - Paris">PetHeaven - Paris</option>
-            </select>
+        <label for="chenil">Animals arrived between :</label>
+        <input name="date_1" type="text" placeholder="2019-05-25"/>
+
+        <label for="chenil">and :</label>
+        <input name="date_2" type="text" placeholder="2019-05-25"/>
 
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
     </form>
@@ -47,9 +67,9 @@ if(isset($_POST['run']))
                         <th>ID</th>
                         <th>Name</th>
                         <th>Category</th>
-                        <th>Arrival date</th>
+                        <th>Race</th>
                         <th>Donator</th>
-                        <th>Chenil</th>
+                        <th>Arrival date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,9 +81,9 @@ if(isset($_POST['run']))
                     <td><?= $row['IdAnimal']; ?></td>
                     <td><?= $row['animalName']; ?></td>
                     <td><?= $row['categoryName']; ?></td>
-                    <td><?= $row['ArrivedAt']; ?></td>
+                    <td><?= $row['raceName']; ?></td>
                     <td><?= $row['donatorName']; ?></td>
-                    <td><?= $row['chenilName']; ?></td>
+                    <td><?= $row['GivenAt']; ?></td>
                 </tr>
 
     <?php

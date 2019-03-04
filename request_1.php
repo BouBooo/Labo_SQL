@@ -46,7 +46,7 @@ if(isset($_POST['run']))
     ?>
                 <tr>
                     <td><?= $data['IdCategory']; ?></td>
-                    <td><?= $data['Name']; ?></td>
+                    <td><?= $data['categoryName']; ?></td>
                 </tr>
 
     <?php
