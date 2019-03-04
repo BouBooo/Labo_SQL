@@ -4,34 +4,48 @@ require('_classes/database.php');
 require('assets/head.php');
 
 $showResult = false;
+$requestError = "";
 
 if(isset($_POST['run']))
 {
-    $chenil = $_POST['chenil'];
-    $showResult = true;
-    $db = Database::connect();
-    $request = $db->prepare('SELECT r.raceName, cat.categoryName, a.IdAnimal, a.animalName, c.chenilName, d.donatorName, d.GivenAt FROM animals a JOIN donators d ON d.IdDonator = a.IdDonator JOIN chenil c ON c.IdChenil = a.IdChenil JOIN categories cat ON cat.IdCategory = a.IdCategory JOIN races r ON r.IdRace = a.IdRace WHERE a.animalName LIKE('')';
-    $request->execute(array($chenil));
-    $rows = $request->fetchAll();
+    if(!empty($_POST['name']))
+    {
+        $name = $_POST['name'];
+        $showResult = true;
+        $db = Database::connect();
+        $request = $db->prepare('SELECT r.raceName, cat.categoryName, a.IdAnimal, a.animalName, c.chenilName, d.donatorName, d.GivenAt 
+                                 FROM animals a 
+                                 JOIN donators d 
+                                 ON d.IdDonator = a.IdDonator 
+                                 JOIN chenil c 
+                                 ON c.IdChenil = a.IdChenil 
+                                 JOIN categories cat 
+                                 ON cat.IdCategory = a.IdCategory 
+                                 JOIN races r 
+                                 ON r.IdRace = a.IdRace 
+                                 WHERE a.animalName LIKE("%'.$name.'%")');
+        $request->execute(array($name));
+        $rows = $request->fetchAll();
+    }
+    else
+    {
+        $requestError = "<span class='alert alert-danger'>Merci de compléter tous les champs</span>";
+    }
 }
 
 ?>
 
 <div class="container">
 
-    <h1>Request 3</h1>
+    <h1>Request 5</h1>
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
     <h2>See animals informations</h2>
 
     <form action="" method="POST">
-        <label for="chenil">Chenil:</label>
-            <select id="chenil" name="chenil">
-                <option value="PetHeaven - Bordeaux">PetHeaven - Bordeaux</option>
-                <option value="PetHeaven - Marseille">PetHeaven - Marseille</option>
-                <option value="PetHeaven - Paris">PetHeaven - Paris</option>
-            </select>
+        <label for="name">Animals :</label>
+        <input name="name" type="text" placeholder="Animal name"/>
 
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
     </form>
@@ -74,4 +88,5 @@ if(isset($_POST['run']))
     ?>
             </table>
 
+        <?= $requestError; ?>
 </div>
