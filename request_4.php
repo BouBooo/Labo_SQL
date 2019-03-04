@@ -4,28 +4,37 @@ require('_classes/database.php');
 require('assets/head.php');
 
 $showResult = false;
+$requestError = "";
 
 if(isset($_POST['run']))
 {
-    $showResult = true;
-    $db = Database::connect();
-    $date_1 = $_POST['date_1'];
-    $date_2 = $_POST['date_2'];
+    if(!empty($_POST['date_1']) && !empty($_POST['date_2']))
+    {
+        $showResult = true;
+        $db = Database::connect();
+        $date_1 = $_POST['date_1'];
+        $date_2 = $_POST['date_2'];
 
 
-    $sql = 'SELECT d.GivenAt, r.raceName, d.donatorName, a.IdAnimal, a.animalName, cat.categoryName 
-            FROM animals a 
-            JOIN categories cat 
-            ON a.IdCategory = cat.IdCategory 
-            JOIN donators d 
-            ON d.IdDonator = a.IdDonator 
-            JOIN races r 
-            ON r.IdRace = a.IdRace 
-            WHERE d.GivenAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '" 
-            ORDER BY d.GivenAt';
-    $request = $db->prepare($sql);
-    $request->execute();
-    $rows = $request->fetchAll();    
+        $sql = 'SELECT d.GivenAt, r.raceName, d.donatorName, a.IdAnimal, a.animalName, cat.categoryName 
+                FROM animals a 
+                JOIN categories cat 
+                ON a.IdCategory = cat.IdCategory 
+                JOIN donators d 
+                ON d.IdDonator = a.IdDonator 
+                JOIN races r 
+                ON r.IdRace = a.IdRace 
+                WHERE d.GivenAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '" 
+                ORDER BY d.GivenAt';
+        $request = $db->prepare($sql);
+        $request->execute();
+        $rows = $request->fetchAll();   
+    }
+    else
+    {
+        $requestError = "<span class='alert alert-danger'>Merci de compléter tous les champs</span>";
+    }
+ 
 }
 
 ?>
@@ -48,13 +57,35 @@ if(isset($_POST['run']))
 
     <form action="" method="POST">
         <label for="chenil">Animals arrived between :</label>
-        <input name="date_1" type="text" placeholder="2019-05-25"/>
+        <input name="date_1" type="text" placeholder="2019-05-25" value="<?php
+                                                                    if(!empty($_POST['date_1']))
+                                                                    {
+                                                                        echo $_POST['date_1'];
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        echo '" placeholder="2016-05-25';
+                                                                    }
+                                                                    ?> 
+                                                                    "/>
 
         <label for="chenil">and :</label>
-        <input name="date_2" type="text" placeholder="2019-05-25"/>
+        <input name="date_2" type="text" placeholder="2019-05-25" value="<?php
+                                                                    if(!empty($_POST['date_2']))
+                                                                    {
+                                                                        echo $_POST['date_2'];
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        echo '" placeholder="2019-05-25';
+                                                                    }
+                                                                    ?> 
+                                                                    "/>
 
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
     </form>
+
+    <?= $requestError; ?>
 
 
     <?php
