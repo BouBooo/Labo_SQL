@@ -118,7 +118,8 @@ if(isset($_POST['run']))
                 </tr>
 
     <?php
-            }  
+            } 
+            $db = Database::disconnect(); 
         }
     ?>
             </table>

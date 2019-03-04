@@ -11,6 +11,7 @@ if(isset($_POST['run']))
     $db = Database::connect();
     $request = $db->prepare('SELECT * FROM categories');
     $request->execute();
+    $rows = $request->fetchAll();
 }
 
 ?>
@@ -41,12 +42,12 @@ if(isset($_POST['run']))
                 </thead>
                 <tbody>
     <?php   
-            while($data = $request->fetch())
+            foreach($rows as $row)
             {
     ?>
                 <tr>
-                    <td><?= $data['IdCategory']; ?></td>
-                    <td><?= $data['categoryName']; ?></td>
+                    <td><?= $row['IdCategory']; ?></td>
+                    <td><?= $row['categoryName']; ?></td>
                 </tr>
 
     <?php

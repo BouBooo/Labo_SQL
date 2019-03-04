@@ -18,7 +18,7 @@ if(isset($_POST['run']))
 
 <div class="container">
 
-    <h1>Request 1</h1>
+    <h1>Request 2</h1>
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
@@ -40,18 +40,27 @@ if(isset($_POST['run']))
                         <th>Chenil</th>
                         <th>Company</th>
                         <th>Location</th>
+                        <th>Number of animals</th>
                     </tr>
                 </thead>
                 <tbody>
     <?php   
             foreach($rows as $row)
             {
+                $countAnimals = $db->prepare("SELECT * 
+                FROM animals 
+                WHERE IdChenil = ?");
+
+                $countAnimals->execute(array($row['IdChenil']));
+                $count = $countAnimals->rowCount();
+                var_dump($count);
     ?>
                 <tr>
                     <td><?= $row['IdChenil']; ?></td>
                     <td><?= $row['chenilName']; ?></td>
                     <td><?= $row['companyName']; ?></td>
                     <td><?= $row['locationName']; ?></td>
+                    <td><?= $count; ?></td>
                 </tr>
 
     <?php
