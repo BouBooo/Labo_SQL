@@ -71,6 +71,44 @@ if(isset($_POST['run']))
     <?php
             }  
         }
+        else
+        {
+            ?>
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Race</th>
+                        <th>Arrival date</th>
+                        <th>Donator</th>
+                        <th>Chenil</th>
+                    </tr>
+                </thead>
+                <tbody>
+            <?php
+                $db = Database::connect();
+                $request = $db->prepare('SELECT r.raceName, cat.categoryName, a.IdAnimal, a.animalName, c.chenilName, d.donatorName, d.GivenAt FROM animals a JOIN donators d ON d.IdDonator = a.IdDonator JOIN chenil c ON c.IdChenil = a.IdChenil JOIN categories cat ON cat.IdCategory = a.IdCategory JOIN races r ON r.IdRace = a.IdRace');
+                $request->execute();
+                $rows = $request->fetchAll();
+
+                        foreach($rows as $row)
+                        {
+                ?>
+                            <tr>
+                                <td><?= $row['IdAnimal']; ?></td>
+                                <td><?= $row['animalName']; ?></td>
+                                <td><?= $row['categoryName']; ?></td>
+                                <td><?= $row['raceName']; ?></td>
+                                <td><?= $row['GivenAt']; ?></td>
+                                <td><?= $row['donatorName']; ?></td>
+                                <td><?= $row['chenilName']; ?></td>
+                            </tr>
+            
+                <?php
+                        }  
+        }
     ?>
             </table>
 
