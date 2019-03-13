@@ -8,33 +8,39 @@ $requestError = "";
 
 if(isset($_POST['run']))
 {
-    if(!empty($_POST['date_1']) && !empty($_POST['date_2']))
-    {
         $showResult = true;
         $db = Database::connect();
-        $date_1 = $_POST['date_1'];
-        $date_2 = $_POST['date_2'];
 
 
-        $sql = 'SELECT d.GivenAt, r.raceName, d.donatorName, a.IdAnimal, a.animalName, cat.categoryName 
-                FROM animals a 
-                JOIN categories cat 
-                ON a.IdCategory = cat.IdCategory 
-                JOIN donators d 
-                ON d.IdDonator = a.IdDonator 
-                JOIN races r 
-                ON r.IdRace = a.IdRace 
-                WHERE d.GivenAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '" 
-                ORDER BY d.GivenAt';
+        $sql = 'SELECT AVG((f.price*3)) AS "AVG daily doggo" , AVG((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt))) AS "AVG total doggo", SUM((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt))) AS "total doggo", (SELECT AVG((f.price*3))
+        FROM food_items f
+        JOIN animals a 
+        ON a.IdFood = f.IdFood
+        JOIN donators d 
+        ON d.IdAnimal = a.IdAnimal
+        WHERE a.IdCategory = 2) AS "AVG daily cat", (SELECT(AVG((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt)))) AS "AVG total cat" FROM food_items f
+        JOIN animals a 
+        ON a.IdFood = f.IdFood
+        JOIN donators d 
+        ON d.IdAnimal = a.IdAnimal
+        WHERE a.IdCategory = 2 ) AS "AVG total cat", (SELECT(SUM((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt)))) AS "AVG total cat" FROM food_items f
+        JOIN animals a 
+        ON a.IdFood = f.IdFood
+        JOIN donators d 
+        ON d.IdAnimal = a.IdAnimal
+        WHERE a.IdCategory = 2 ) AS "total cat"
+        
+        FROM food_items f
+        JOIN animals a 
+        ON a.IdFood = f.IdFood
+        JOIN donators d 
+        ON d.IdAnimal = a.IdAnimal
+        WHERE a.IdCategory = 1';
+
+
         $request = $db->prepare($sql);
         $request->execute();
-        $rows = $request->fetchAll();   
-    }
-    else
-    {
-        $requestError = "<span class='alert alert-danger'>Merci de compléter tous les champs</span>";
-    }
- 
+        $rows = $request->fetchAll();    
 }
 
 ?>
@@ -45,42 +51,11 @@ if(isset($_POST['run']))
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h3>On cherche à connaitre les infos suivantes pour les animaux arrivés entre deux dates (définies par l'utilisateur) : </h3>
-        <ul>
-            <li>Nom de l'animal</li>
-            <li>Catégorie de l'animal</li>
-            <li>Race de l'animal</li>
-            <li>Nom du donator</li>
-            <li>Date d'arrivée de l'animal</li>
-        </ul>
+    <h3>See how many each animal cost since it arrived : </h3>
     </h3>
 
     <form action="" method="POST">
-        <label for="chenil">Animals arrived between :</label>
-        <input name="date_1" type="text" placeholder="2019-05-25" value="<?php
-                                                                    if(!empty($_POST['date_1']))
-                                                                    {
-                                                                        echo $_POST['date_1'];
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        echo '" placeholder="2016-05-25';
-                                                                    }
-                                                                    ?> 
-                                                                    "/>
-
-        <label for="chenil">and :</label>
-        <input name="date_2" type="text" placeholder="2019-05-25" value="<?php
-                                                                    if(!empty($_POST['date_2']))
-                                                                    {
-                                                                        echo $_POST['date_2'];
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        echo '" placeholder="2019-05-25';
-                                                                    }
-                                                                    ?> 
-                                                                    "/>
+        <label for="chenil">Price for feed animals :</label>
 
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
     </form>
@@ -95,12 +70,12 @@ if(isset($_POST['run']))
             <table class="table table-dark">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Race</th>
-                        <th>Donator</th>
-                        <th>Arrival date</th>
+                        <th>Daily average for doggo</th>
+                        <th>Total average for doggo</th>
+                        <th>Total doggos</th>
+                        <th>Daily average for cat</th>
+                        <th>Total average for cat</th>
+                        <th>Total cats</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,12 +84,13 @@ if(isset($_POST['run']))
             {
     ?>
                 <tr>
-                    <td><?= $row['IdAnimal']; ?></td>
-                    <td><?= $row['animalName']; ?></td>
-                    <td><?= $row['categoryName']; ?></td>
-                    <td><?= $row['raceName']; ?></td>
-                    <td><?= $row['donatorName']; ?></td>
-                    <td><?= $row['GivenAt']; ?></td>
+                    <td><?= $row['AVG daily doggo']; ?> €</td>
+                    <td><?= $row['AVG total doggo']; ?> €</td>
+                    <td><?= $row['total doggo']; ?> €</td>
+                    <td><?= $row['AVG daily cat']; ?> €</td>
+                    <td><?= $row['AVG total cat']; ?> €</td>
+                    <td><?= $row['total cat']; ?> €</td>
+                    
                 </tr>
 
     <?php

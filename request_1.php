@@ -22,7 +22,7 @@ if(isset($_POST['run']))
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h2>See categories</h2>
+    <h2>See animals who eat chicken and still are in chenils</h2>
 
     <form action="" method="POST">
         <input class="btn btn-info" type="submit" name="run" value="Run"/>

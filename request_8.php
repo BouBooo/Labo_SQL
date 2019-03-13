@@ -9,9 +9,11 @@ if(isset($_POST['run']))
 {
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('SELECT r.IdRoom, r.roomName, r.capacity, 
+    $request = $db->prepare('SELECT r.IdRoom, r.roomName, r.capacity, c.categoryName,
                                 (SELECT COUNT(idAnimal) FROM animals WHERE idRoom = r.IdRoom) as "amaux"
                             FROM rooms r
+                            JOIN categories c
+                            ON c.IdCategory = r.IdCategory
                             ORDER BY r.roomName                   
                             ');
     $request->execute();
@@ -43,6 +45,7 @@ if(isset($_POST['run']))
                         <th>Id room</th>
                         <th>Room</th>
                         <th>Animals / Capacity</th>
+                        <th>Category</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,6 +57,7 @@ if(isset($_POST['run']))
                     <td><?= $row['IdRoom']; ?></td>
                     <td><?= $row['roomName']; ?></td>
                     <td><?= $row['amaux'] . ' / ' . $row['capacity']; ?></td>
+                    <td><?= $row['categoryName']; ?></td>
                 </tr>
 
     <?php

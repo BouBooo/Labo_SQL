@@ -11,14 +11,14 @@ if(isset($_POST['run']))
 {
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('SELECT a.IdAnimal, a.animalName, f.Composition, f.foodName, c.chenilName
+    $request = $db->prepare('   SELECT a.IdAnimal, a.animalName, f.Composition, f.foodName, c.chenilName
                                 FROM animals a
                                 JOIN food_items f
                                 ON f.IdFood = a.IdFood
                                 JOIN chenil c
                                 ON c.IdChenil = a.IdChenil 
                                 WHERE f.IdFood = 2
-                                AND c.IdChenil = 2           
+                                AND c.IdChenil = 3           
                             ');
     $request->execute();
     $rows = $request->fetchAll();
@@ -32,7 +32,11 @@ if(isset($_POST['run']))
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h2>Voir les chiens du chenil 2 qui ont un régime carnivore</h2>
+    <h2>Voir les chiens du chenil de Paris qui ont un régime carnivore</h2>
+
+    <img src="img/request_7.PNG"/>
+    <br>
+    <br>
 
     <form action="" method="POST">
         <input class="btn btn-info" type="submit" name="run" value="Run"/>

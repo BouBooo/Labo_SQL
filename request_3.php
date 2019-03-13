@@ -90,16 +90,20 @@ if(isset($_POST['run']))
             <?php
                 $db = Database::connect();
                 $request = $db->prepare('SELECT r.raceName, cat.categoryName, a.IdAnimal, a.animalName, c.chenilName, d.donatorName, d.GivenAt 
-                                            FROM animals a 
-                                            JOIN donators d 
-                                            ON d.IdDonator = a.IdDonator 
-                                            JOIN chenil c 
-                                            ON c.IdChenil = a.IdChenil 
-                                            JOIN categories cat 
-                                            ON cat.IdCategory = a.IdCategory 
-                                            JOIN races r 
-                                            ON r.IdRace = a.IdRace 
-                                            ORDER BY a.IdAnimal');
+                FROM animals a 
+           
+                JOIN donators d 
+                ON d.IdDonator = a.IdDonator 
+                JOIN chenil c 
+                ON c.IdChenil = a.IdChenil 
+                JOIN categories cat 
+                ON cat.IdCategory = a.IdCategory 
+                JOIN races r 
+                ON r.IdRace = a.IdRace 
+                WHERE a.IdDonator IS NOT NULL
+                ORDER BY a.IdAnimal
+                                            
+                                            ');
                 $request->execute();
                 $rows = $request->fetchAll();
 

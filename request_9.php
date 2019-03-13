@@ -19,35 +19,31 @@ if(isset($_POST['run']))
 
             $db = Database::connect();
 
-            //Count how many doggos are adopted
-            $request = $db->prepare('SELECT c.categoryName, COUNT(a.adopted) as "adopt", a.adopted
-                                            FROM animals a     
-                                            JOIN categories c    
-                                            ON c.IdCategory = a.IdCategory 
-                                            JOIN buyers b
-                                            ON b.IdAnimal = a.IdAnimal  
-                                            WHERE c.IdCategory = 1  
-                                            AND a.adopted = 1  
-                                            AND b.AdoptedAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '"           
+            //Count how many doggos/cats are adopted
+
+            $request = $db->prepare('   SELECT "Nombre adoption", COUNT(a.adopted) as "Chiens", 
+                                                (SELECT COUNT(a.adopted) 
+                                                FROM animals a     
+                                                JOIN categories c    
+                                                ON c.IdCategory = a.IdCategory 
+                                                JOIN buyers b
+                                                ON b.IdAnimal = a.IdAnimal  
+                                                WHERE c.IdCategory = 2 
+                                                AND a.adopted = 1
+                                                AND b.AdoptedAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '" ) "Chats"
+
+                                        FROM animals a     
+                                        JOIN categories c    
+                                        ON c.IdCategory = a.IdCategory 
+                                        JOIN buyers b
+                                        ON b.IdAnimal = a.IdAnimal  
+                                        WHERE c.IdCategory = 1  
+                                        AND a.adopted = 1
+                                        AND b.AdoptedAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '"   
+
                                     ');
             $request->execute();
             $doggos = $request->fetch();
-
-
-
-            //Count how many cats are adopted
-            $request2 = $db->prepare('SELECT c.categoryName, COUNT(a.adopted) as "adopt", a.adopted
-                FROM animals a     
-                JOIN categories c    
-                ON c.IdCategory = a.IdCategory
-                JOIN buyers b
-                ON b.IdAnimal = a.IdAnimal    
-                WHERE c.IdCategory = 2   
-                AND a.adopted = 1  
-                AND b.AdoptedAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '" 
-                ');
-            $request2->execute();
-            $cats = $request2->fetch();
     }
     else
     {
@@ -65,6 +61,10 @@ if(isset($_POST['run']))
     <a class="btn btn-dark" href="index.php">Forward</a>
 
     <h2>See which animal category has the most adoption between X date and X date</h2>
+
+    <img src="img/request_9.PNG"/>
+    <br>
+    <br>
 
     <form action="" method="POST">
         <label for="chenil">Animals arrived between :</label>
@@ -111,31 +111,33 @@ if(isset($_POST['run']))
                 </thead>
                 <tbody>
                 <tr>
-                    <td><?= $doggos['categoryName']; ?></td>
-                    <td><?= $doggos['adopt'] ?></td>
+                    <td>Chiens</td>
+                    <td><?= $doggos['Chiens'] ?></td>
                 </tr>
                 <tr>
-                    <td><?= $cats['categoryName']; ?></td>
-                    <td><?= $cats['adopt'] ?></td>
+                    <td>Chats</td>
+                    <td><?= $doggos['Chats'] ?></td>
                 </tr>
 
             </table>
 
             <?php
+            /*
             if($cats['adopt'] > $doggos['adopt'])
             {
                 $adopt_info = 'Il y a plus d\'adoption de chats que de chiens';
             }
             else if($doggos['adopt'] > $cats['adopt'])
             {
-                $adopt_info = 'Il y a plus d\'adoption de chiens que de chats';
+                $adopt_info = '<span class="alert alert-success">Il y a plus d\'adoption de chiens que de chats';
             }
             else if($doggos['adopt'] == $cats['adopt'])
             {
                 $adopt_info = 'Il y a autant d\'adoption de chiens que de chats';
             }
 
-            echo $adopt_info . ' entre le <b>' . $date_1 . '</b> et le <b>'. $date_2;
+            echo $adopt_info . ' entre le <b>' . $date_1 . '</b> et le <b>'. $date_2.' </span>';
+            */
         }
 
         // Print if error

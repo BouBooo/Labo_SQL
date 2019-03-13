@@ -9,14 +9,17 @@ if(isset($_POST['run']))
 {
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('SELECT e.LastName, e.FirstName, e.Email, c.chenilName, comp.companyName, l.locationName
+    $request = $db->prepare('SELECT e.LastName, e.FirstName, e.Email, c.chenilName, comp.companyName, l.locationName, j.jobName
                             FROM employees e
                             JOIN chenil c
                             ON c.IdChenil = e.IdChenil 
                             JOIN company comp
                             ON comp.IdCompany = e.IdCompany
                             JOIN location l
-                            ON l.IdLocation = e.IdLocation                      
+                            ON l.IdLocation = e.IdLocation  
+                            JOIN jobs j
+                            ON j.IdJob = e.IdJob  
+                            ORDER BY j.jobName DESC                  
                             ');
     $request->execute();
     $rows = $request->fetchAll();
@@ -44,6 +47,7 @@ if(isset($_POST['run']))
             <table class="table table-dark">
                 <thead>
                     <tr>
+                        <th>Job</th>
                         <th>Firstname</th>
                         <th>Lastname</th>
                         <th>Email</th>
@@ -58,6 +62,7 @@ if(isset($_POST['run']))
             {
     ?>
                 <tr>
+                    <td><?= $row['jobName']; ?></td>
                     <td><?= $row['FirstName']; ?></td>
                     <td><?= $row['LastName']; ?></td>
                     <td><?= $row['Email']; ?></td>
