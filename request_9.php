@@ -4,35 +4,57 @@ require('_classes/database.php');
 require('assets/head.php');
 
 $showResult = false;
+$request_error = "";
+
 
 if(isset($_POST['run']))
 {
-    $showResult = true;
-    $db = Database::connect();
-    $request = $db->prepare('SELECT c.categoryName, a.adopted, 
-                                (SELECT COUNT(idAnimal) FROM animals WHERE adopted = 1 AND IdCategory = 1) as "adopt"
-                                    FROM animals a     
-                                    JOIN categories c    
-                                    ON c.IdCategory = a.IdCategory   
-                                    WHERE c.IdCategory = 1  
-                                    AND a.adopted = 1      
-                            ');
-    $request->execute();
-    $doggos = $request->fetch();
+    if(!empty($_POST['date_1']) && !empty($_POST['date_2']))
+    {
+
+            $date_1 = $_POST['date_1'];
+            $date_2 = $_POST['date_2'];
+            $showResult = true;
+
+
+            $db = Database::connect();
+
+            //Count how many doggos are adopted
+            $request = $db->prepare('SELECT c.categoryName, COUNT(a.adopted) as "adopt", a.adopted
+                                            FROM animals a     
+                                            JOIN categories c    
+                                            ON c.IdCategory = a.IdCategory 
+                                            JOIN buyers b
+                                            ON b.IdAnimal = a.IdAnimal  
+                                            WHERE c.IdCategory = 1  
+                                            AND a.adopted = 1  
+                                            AND b.AdoptedAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '"           
+                                    ');
+            $request->execute();
+            $doggos = $request->fetch();
 
 
 
-    $request2 = $db->prepare('SELECT c.categoryName, a.adopted, 
-    (SELECT COUNT(idAnimal) FROM animals WHERE adopted = 1 AND IdCategory = 2) as "adopt"
-        FROM animals a     
-        JOIN categories c    
-        ON c.IdCategory = a.IdCategory   
-        WHERE c.IdCategory = 2   
-        AND a.adopted = 1   
-        ');
-    $request2->execute();
-    $cats = $request2->fetch();
+            //Count how many cats are adopted
+            $request2 = $db->prepare('SELECT c.categoryName, COUNT(a.adopted) as "adopt", a.adopted
+                FROM animals a     
+                JOIN categories c    
+                ON c.IdCategory = a.IdCategory
+                JOIN buyers b
+                ON b.IdAnimal = a.IdAnimal    
+                WHERE c.IdCategory = 2   
+                AND a.adopted = 1  
+                AND b.AdoptedAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '" 
+                ');
+            $request2->execute();
+            $cats = $request2->fetch();
+    }
+    else
+    {
+        $request_error = '<span class="alert alert-danger">Please inquire all inputs</span>';
+    }
 }
+
 
 ?>
 
@@ -42,11 +64,38 @@ if(isset($_POST['run']))
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h2>See adopted infos</h2>
+    <h2>See which animal category has the most adoption between X date and X date</h2>
 
     <form action="" method="POST">
+        <label for="chenil">Animals arrived between :</label>
+        <input name="date_1" type="text" placeholder="2019-05-25" value="<?php
+                                                                    if(!empty($_POST['date_1']))
+                                                                    {
+                                                                        echo $_POST['date_1'];
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        echo '" placeholder="2016-05-25';
+                                                                    }
+                                                                    ?> 
+                                                                    "/>
+
+        <label for="chenil">and :</label>
+        <input name="date_2" type="text" placeholder="2019-05-25" value="<?php
+                                                                    if(!empty($_POST['date_2']))
+                                                                    {
+                                                                        echo $_POST['date_2'];
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        echo '" placeholder="2019-05-25';
+                                                                    }
+                                                                    ?> 
+                                                                    "/>
+
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
     </form>
+
 
 
     <?php
@@ -57,40 +106,19 @@ if(isset($_POST['run']))
                 <thead>
                     <tr>
                         <th>Category</th>
-                        <th>Adoption</th>
                         <th>Adoption number</th>
                     </tr>
                 </thead>
                 <tbody>
-
-                <?php
-                            if($doggos['adopted'] == 1)
-                            {
-                                $adoption  = "Adopted doggos";
-                            }
-                ?>
                 <tr>
                     <td><?= $doggos['categoryName']; ?></td>
-                    <td><?= $adoption ?></td>
                     <td><?= $doggos['adopt'] ?></td>
                 </tr>
                 <tr>
-
-                <?php
-                            if($cats['adopted'] == 1)
-                            {
-                                $adoption  = "Adopted cats";
-                            }
-                ?>
                     <td><?= $cats['categoryName']; ?></td>
-                    <td><?= $adoption ?></td>
                     <td><?= $cats['adopt'] ?></td>
                 </tr>
 
-    <?php
-
-        }
-    ?>
             </table>
 
             <?php
@@ -107,7 +135,12 @@ if(isset($_POST['run']))
                 $adopt_info = 'Il y a autant d\'adoption de chiens que de chats';
             }
 
-            echo $adopt_info;
-            ?>
+            echo $adopt_info . ' entre le <b>' . $date_1 . '</b> et le <b>'. $date_2;
+        }
+
+        // Print if error
+        echo $request_error;
+
+        ?>
 
 </div>

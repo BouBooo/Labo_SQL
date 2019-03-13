@@ -132,22 +132,6 @@ p {
 
 </style>
 
-<?php
-
-$db = Database::connect();
-
-if($db)
-{
-    echo "connection etablished";
-}
-else
-{
-    echo "connection error";
-}
-
-
-?>
-
 
 
 <!-- header -->
