@@ -83,7 +83,36 @@ if(isset($_POST['run']))
                 </tr>
 
     <?php
-            } 
+            }
+            
+            $bordeaux = $row['Chenil Bordeaux'];
+            $marseille = $row['Chenil Marseille'];
+            $paris = $row['Chenil Paris'];
+
+            if(($bordeaux > $marseille) && ($bordeaux > $paris))
+            {
+                $diff1 = $bordeaux - $marseille;
+                $diff2 = $bordeaux - $paris;
+                
+                $info = 'Le chenil de Bordeaux est le chenil qui a généré le plus d\'argent : <b>' . $bordeaux . ' €</b><br>
+                        <b>' . $diff1 .' €</b> de plus que que Marseille, et <b>' . $diff2 . ' €</b> de plus que Paris';
+            }
+            else if(($marseille > $bordeaux) && ($marseille > $paris))
+            {
+                $diff1 = $marseille - $bordeaux;
+                $diff2 = $marseille - $paris;
+
+                $info = 'Le chenil de Marseille est le chenil qui a généré le plus d\'argent : <b>' . $marseille . ' €</b><br>
+                        <b>' . $diff1 .' €</b> de plus que que Bordeaux, et <b>' . $diff2 . ' €</b> de plus que Paris';
+            }
+            else if(($paris > $marseille) && ($paris > $bordeaux))
+            {
+                $diff1 = $paris - $bordeaux;
+                $diff2 = $paris - $marseille;
+
+                $info = 'Le chenil de Paris est le chenil qui a généré le plus d\'argent : <b>' . $paris . ' €</b><br>
+                        <b>' . $diff1 .' €</b> de plus que que Bordeaux, et <b>' . $diff2 . ' €</b> de plus que Marseille';
+            }
         }
         else if($showResult == false)
         {
@@ -91,5 +120,7 @@ if(isset($_POST['run']))
         } 
     ?>
             </table>
+
+            <?= $info ?>
 
 </div>
