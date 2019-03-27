@@ -5,22 +5,42 @@ require('assets/head.php');
 
 $showResult = false;
 
+
+
 if(isset($_POST['run']))
 {
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('SELECT e.LastName, e.FirstName, e.Email, c.chenilName, comp.companyName, l.locationName, j.jobName
-                            FROM employees e
-                            JOIN chenil c
-                            ON c.IdChenil = e.IdChenil 
-                            JOIN company comp
-                            ON comp.IdCompany = e.IdCompany
-                            JOIN location l
-                            ON l.IdLocation = e.IdLocation  
-                            JOIN jobs j
-                            ON j.IdJob = e.IdJob  
-                            ORDER BY j.jobName DESC                  
+    $request = $db->prepare('   SELECT DISTINCT
+                                    (SELECT SUM(i.Payement) 
+                                    FROM invoice i 
+                                    JOIN animals a
+                                    ON a.IdAnimal = i.IdAnimal
+                                    JOIN chenil c
+                                    ON c.IdChenil = a.IdChenil
+                                    WHERE c.IdChenil = 1
+                                    ) as "Chenil Bordeaux",
+                                    
+                                        (SELECT SUM(i.Payement) 
+                                    FROM invoice i 
+                                    JOIN animals a
+                                    ON a.IdAnimal = i.IdAnimal
+                                    JOIN chenil c
+                                    ON c.IdChenil = a.IdChenil
+                                    WHERE c.IdChenil = 2
+                                    ) as "Chenil Marseille",
+                                    
+                                        (SELECT SUM(i.Payement) 
+                                    FROM invoice i 
+                                    JOIN animals a
+                                    ON a.IdAnimal = i.IdAnimal
+                                    JOIN chenil c
+                                    ON c.IdChenil = a.IdChenil
+                                    WHERE c.IdChenil = 3
+                                    ) as "Chenil Paris"
+                                FROM chenil c
                             ');
+                            
     $request->execute();
     $rows = $request->fetchAll();
 }
@@ -33,27 +53,22 @@ if(isset($_POST['run']))
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h2>See employees infos</h2>
+    <h2>See which chenil won most money </h2>
 
     <form action="" method="POST">
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
     </form>
-
-
-    <?php
+<?php
         if($showResult)
         {
     ?>
             <table class="table table-dark">
                 <thead>
                     <tr>
-                        <th>Job</th>
-                        <th>Firstname</th>
-                        <th>Lastname</th>
-                        <th>Email</th>
-                        <th>Location</th>
-                        <th>Chenil</th>
-                        <th>Company</th>
+                        <th>Bordeaux</th>
+                        <th>Marseille</th>
+                        <th>Paris</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -62,18 +77,18 @@ if(isset($_POST['run']))
             {
     ?>
                 <tr>
-                    <td><?= $row['jobName']; ?></td>
-                    <td><?= $row['FirstName']; ?></td>
-                    <td><?= $row['LastName']; ?></td>
-                    <td><?= $row['Email']; ?></td>
-                    <td><?= $row['locationName']; ?></td>
-                    <td><?= $row['chenilName']; ?></td>
-                    <td><?= $row['companyName']; ?></td>
+                    <td><?= $row['Chenil Bordeaux']?> €</td>
+                    <td><?= $row['Chenil Marseille']?> €</td>
+                    <td><?= $row['Chenil Paris']?> €</td>
                 </tr>
 
     <?php
-            }  
+            } 
         }
+        else if($showResult == false)
+        {
+            echo '<img src="img/request_6.PNG"/>';
+        } 
     ?>
             </table>
 

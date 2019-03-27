@@ -12,30 +12,36 @@ if(isset($_POST['run']))
         $db = Database::connect();
 
 
-        $sql = 'SELECT AVG((f.price*3)) AS "AVG daily doggo" , AVG((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt))) AS "AVG total doggo", SUM((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt))) AS "total doggo", (SELECT AVG((f.price*3))
-        FROM food_items f
-        JOIN animals a 
-        ON a.IdFood = f.IdFood
-        JOIN donators d 
-        ON d.IdAnimal = a.IdAnimal
-        WHERE a.IdCategory = 2) AS "AVG daily cat", (SELECT(AVG((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt)))) AS "AVG total cat" FROM food_items f
-        JOIN animals a 
-        ON a.IdFood = f.IdFood
-        JOIN donators d 
-        ON d.IdAnimal = a.IdAnimal
-        WHERE a.IdCategory = 2 ) AS "AVG total cat", (SELECT(SUM((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt)))) AS "AVG total cat" FROM food_items f
-        JOIN animals a 
-        ON a.IdFood = f.IdFood
-        JOIN donators d 
-        ON d.IdAnimal = a.IdAnimal
-        WHERE a.IdCategory = 2 ) AS "total cat"
-        
-        FROM food_items f
-        JOIN animals a 
-        ON a.IdFood = f.IdFood
-        JOIN donators d 
-        ON d.IdAnimal = a.IdAnimal
-        WHERE a.IdCategory = 1';
+        $sql = '        SELECT AVG((f.price*3)) AS "AVG daily doggo" , 
+                            AVG((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt))) AS "AVG total doggo", 
+                            SUM((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt))) AS "total doggo", 
+                                (SELECT AVG((f.price*3))
+                                FROM food_items f
+                                JOIN animals a 
+                                ON a.IdFood = f.IdFood
+                                JOIN donators d 
+                                ON d.IdAnimal = a.IdAnimal
+                                WHERE a.IdCategory = 2) AS "AVG daily cat",
+                                (SELECT(AVG((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt)))) AS "AVG total cat" 
+                                FROM food_items f
+                                JOIN animals a 
+                                ON a.IdFood = f.IdFood
+                                JOIN donators d 
+                                ON d.IdAnimal = a.IdAnimal
+                                WHERE a.IdCategory = 2 ) AS "AVG total cat", 
+                                (SELECT(SUM((f.price*3)*(SELECT DATEDIFF(NOW(),d.GivenAt)))) AS "AVG total cat" 
+                                FROM food_items f
+                        JOIN animals a 
+                        ON a.IdFood = f.IdFood
+                        JOIN donators d 
+                        ON d.IdAnimal = a.IdAnimal
+                        WHERE a.IdCategory = 2 ) AS "total cat"
+                        FROM food_items f
+                        JOIN animals a 
+                        ON a.IdFood = f.IdFood
+                        JOIN donators d 
+                        ON d.IdAnimal = a.IdAnimal
+                        WHERE a.IdCategory = 1';
 
 
         $request = $db->prepare($sql);
@@ -51,8 +57,11 @@ if(isset($_POST['run']))
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h3>See how many each animal cost since it arrived : </h3>
+    <h3>Which animal's category is the most expensive to feed : </h3>
     </h3>
+    
+
+    
 
     <form action="" method="POST">
         <label for="chenil">Price for feed animals :</label>
@@ -95,9 +104,41 @@ if(isset($_POST['run']))
 
     <?php
             } 
+
+            if($row['total doggo'] > $row['total cat'])
+            {
+                $diff_total = round($row['total doggo'] - $row['total cat'], 2.3);
+                $avg_daily = round($row['AVG daily doggo'] - $row['AVG daily cat'], 2.3 );
+                $avg_total = round($row['AVG total doggo'] - $row['AVG total cat'], 2.3 );
+                $cost_info = 'Au total, les chiens sont plus cher à nourrir que les chats de <b>' . $diff_total . '€</b><br>
+                            Le cout journalier d\'un chien est, en moyenne, plus cher de <b>' . $avg_daily . '€</b><br>
+                            Et en moyenne, à nourrir, un chien coûte plus cher de  <b>' . $avg_total . '€ </b>';
+
+                
+            }
+            else if($row['total doggo'] < $row['total cat'])
+            {
+                $diff_total = $row['total cat'] - $row['total doggo'];
+                $cost_info = 'Au total, les chats sont plus cher à nourrir que les chiens de ' . $diff_total;
+            }
+            else if($row['total doggo'] == $row['total cat'])
+            {
+                $cost_info = 'Les chiens sont aussi cher à nourrir que les chats';
+            }
+
+            echo $cost_info; 
+
+            
+            
             $db = Database::disconnect(); 
+        }
+        else
+        {
+            echo '<img width="450" src="img/request_4.PNG"/><br><br>';
         }
     ?>
             </table>
+
+            
 
 </div>

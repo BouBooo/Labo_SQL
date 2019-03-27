@@ -50,8 +50,6 @@ if(isset($_POST['run']))
         $request_error = '<span class="alert alert-danger">Please inquire all inputs</span>';
     }
 }
-
-
 ?>
 
 <div class="container">
@@ -62,9 +60,6 @@ if(isset($_POST['run']))
 
     <h2>See which animal category has the most adoption between X date and X date</h2>
 
-    <img src="img/request_9.PNG"/>
-    <br>
-    <br>
 
     <form action="" method="POST">
         <label for="chenil">Animals arrived between :</label>
@@ -122,27 +117,15 @@ if(isset($_POST['run']))
             </table>
 
             <?php
-            /*
-            if($cats['adopt'] > $doggos['adopt'])
-            {
-                $adopt_info = 'Il y a plus d\'adoption de chats que de chiens';
-            }
-            else if($doggos['adopt'] > $cats['adopt'])
-            {
-                $adopt_info = '<span class="alert alert-success">Il y a plus d\'adoption de chiens que de chats';
-            }
-            else if($doggos['adopt'] == $cats['adopt'])
-            {
-                $adopt_info = 'Il y a autant d\'adoption de chiens que de chats';
-            }
-
-            echo $adopt_info . ' entre le <b>' . $date_1 . '</b> et le <b>'. $date_2.' </span>';
-            */
         }
+        else
+        {
+            // Print if error
+            echo $request_error . '<br><br>';
 
-        // Print if error
-        echo $request_error;
-
+            // Show request
+            echo '<img src="img/request_9.PNG"/><br><br>';
+        }
         ?>
 
 </div>

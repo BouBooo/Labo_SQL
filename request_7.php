@@ -34,10 +34,6 @@ if(isset($_POST['run']))
 
     <h2>Voir les chiens du chenil de Paris qui ont un régime carnivore</h2>
 
-    <img src="img/request_7.PNG"/>
-    <br>
-    <br>
-
     <form action="" method="POST">
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
     </form>
@@ -70,6 +66,10 @@ if(isset($_POST['run']))
 
     <?php
             }  
+        }
+        else
+        {
+            echo '<img src="img/request_7.PNG"/>';
         }
     ?>
             </table>
