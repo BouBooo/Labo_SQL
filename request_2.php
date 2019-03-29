@@ -10,11 +10,14 @@ if(isset($_POST['run']))
     $showResult = true;
     $db = Database::connect();
     $request = $db->prepare('   SELECT COUNT(a.IdAnimal) as "Adopted animals count", 
-                                    ROUND(AVG(DATEDIFF(b.adoptedAt, a.BornAt)/365), 2) as "Average age"
-                                    FROM animals a
-                                    JOIN buyers b 
-                                    ON a.IdAnimal = b.IdAnimal
-                                    WHERE a.adopted = 1
+                                    ROUND(AVG(DATEDIFF(b.adoptedAt, a.BornAt)/365), 2) as "Average age",
+                                        (SELECT ROUND(AVG(DATEDIFF(NOW(), a.BornAt)/365), 2) 
+                                        FROM animals a 
+                                        WHERE a.adopted = 0) as "None adopted yet"
+                                FROM animals a
+                                JOIN buyers b 
+                                ON a.IdAnimal = b.IdAnimal
+                                WHERE a.adopted = 1
                                     
                                     ');
     $request->execute();
@@ -45,7 +48,8 @@ if(isset($_POST['run']))
                 <thead>
                     <tr>
                         <th>Number of adopted animals</th>
-                        <th>Average age</th>
+                        <th>Average age of animals when they adopt them</th>
+                        <th>Average age of animals none adopted yet</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,6 +60,7 @@ if(isset($_POST['run']))
                 <tr>
                     <td><?= $row['Adopted animals count']; ?> animals</td>
                     <td><?= $row['Average age']; ?> years old</td>
+                    <td><?= $row['None adopted yet']; ?> years old</td>
                 </tr>
 
     <?php
