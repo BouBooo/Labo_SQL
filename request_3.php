@@ -4,29 +4,52 @@ require('_classes/database.php');
 require('assets/head.php');
 
 $showResult = false;
+$request_error = "";
+
 
 if(isset($_POST['run']))
 {
-    $showResult = true;
-    $db = Database::connect();
-    $request = $db->prepare('   SELECT DISTINCT
-                                    (SELECT COUNT(a.IdAnimal) FROM animals a WHERE a.IdChenil = 1 AND a.adopted = 0) as "Bordeaux animals",
-                                    (SELECT COUNT(a.IdAnimal) FROM animals a WHERE a.IdChenil = 2 AND a.adopted = 0) as "Marseille animals",
-                                    (SELECT COUNT(a.IdAnimal) FROM animals a WHERE a.IdChenil = 3 AND a.adopted = 0) as "Paris animals",
-                                    (SELECT COUNT(e.IdEmployee) FROM employees e WHERE e.IdChenil = 1 AND e.IdJob = 4) as "Bordeaux employees",
-                                    (SELECT COUNT(e.IdEmployee) FROM employees e WHERE e.IdChenil = 2 AND e.IdJob = 4) as "Marseille employees",
-                                    (SELECT COUNT(e.IdEmployee) FROM employees e WHERE e.IdChenil = 3 AND e.IdJob = 4) as "Paris employees",
-                                    (	ROUND((SELECT COUNT(a.IdAnimal) FROM animals a WHERE a.adopted = 0) 
-                                        / 
-                                        (SELECT COUNT(e.IdEmployee) FROM employees e WHERE e.IdJob = 4))) as "Avg"
-                                FROM animals
-                                
-                                ');
-    $request->execute();
-    $rows = $request->fetchAll();
+    if(!empty($_POST['date_1']) && !empty($_POST['date_2']))
+    {
 
+            $date_1 = $_POST['date_1'];
+            $date_2 = $_POST['date_2'];
+            $showResult = true;
+
+
+            $db = Database::connect();
+
+            //Count how many doggos/cats are adopted
+
+            $request = $db->prepare('   SELECT "Nombre adoption", COUNT(a.adopted) as "Chiens", 
+                                                (SELECT COUNT(a.adopted) 
+                                                FROM animals a     
+                                                JOIN categories c    
+                                                ON c.IdCategory = a.IdCategory 
+                                                JOIN buyers b
+                                                ON b.IdAnimal = a.IdAnimal  
+                                                WHERE c.IdCategory = 2 
+                                                AND a.adopted = 1
+                                                AND b.AdoptedAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '" ) "Chats"
+
+                                        FROM animals a     
+                                        JOIN categories c    
+                                        ON c.IdCategory = a.IdCategory 
+                                        JOIN buyers b
+                                        ON b.IdAnimal = a.IdAnimal  
+                                        WHERE c.IdCategory = 1  
+                                        AND a.adopted = 1
+                                        AND b.AdoptedAt BETWEEN "' . $date_1 . '" AND "' . $date_2 . '"   
+
+                                    ');
+            $request->execute();
+            $doggos = $request->fetch();
+    }
+    else
+    {
+        $request_error = '<span class="alert alert-danger">Please inquire all inputs</span>';
+    }
 }
-
 ?>
 
 <div class="container">
@@ -35,54 +58,78 @@ if(isset($_POST['run']))
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h2>Watch how many animals can manage an employee</h2>
+    <h2>See which animal category has the most adoption between X date and X date</h2>
+
 
     <form action="" method="POST">
+        <label for="chenil">Animals arrived between :</label>
+        <input name="date_1" type="text" placeholder="2019-05-25" value="<?php
+                                                                    if(!empty($_POST['date_1']))
+                                                                    {
+                                                                        echo $_POST['date_1'];
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        echo '" placeholder="2016-05-25';
+                                                                    }
+                                                                    ?> 
+                                                                    "/>
+
+        <label for="chenil">and :</label>
+        <input name="date_2" type="text" placeholder="2019-05-25" value="<?php
+                                                                    if(!empty($_POST['date_2']))
+                                                                    {
+                                                                        echo $_POST['date_2'];
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        echo '" placeholder="2019-05-25';
+                                                                    }
+                                                                    ?> 
+                                                                    "/>
+
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
     </form>
 
 
+
     <?php
         if($showResult)
-        {
+        {            
     ?>
             <table class="table table-dark">
                 <thead>
                     <tr>
-                        <td><b>Bordeaux</b> (Animals / Employees)</td>
-                        <td><b>Marseille</b> (Animals / Employees)</td>
-                        <td><b>Paris</b> (Animals / Employees)</td>
+                        <th>Category</th>
+                        <th>Adoption number</th>
                     </tr>
                 </thead>
                 <tbody>
-    <?php   
-            foreach($rows as $row)
-            {
-    ?>
                 <tr>
-                    <td><?= $row['Bordeaux animals']; ?> / <?= $row['Bordeaux employees']; ?></td>
-                    <td><?= $row['Marseille animals']; ?> / <?= $row['Marseille employees']; ?></td>
-                    <td><?= $row['Paris animals']; ?> / <?= $row['Paris employees']; ?></td>
+                    <td>Chiens</td>
+                    <td><?= $doggos['Chiens'] ?></td>
+                </tr>
+                <tr>
+                    <td>Chats</td>
+                    <td><?= $doggos['Chats'] ?></td>
                 </tr>
 
-    <?php
-            }  
-
-            $info =  'An employee manages an average of <b>'. $row['Avg'] .'</b> animals';
-        }
-        else
-        {
-            echo '<img src="img/request_3.PNG"/><br><br>';
-        }
-        
-    ?>
             </table>
 
             <?php
-            if($showResult)
-            {
-                echo $info;
-            }
-            ?>
+        }
+        else
+        {
+            // Print if error
+            echo $request_error . '<br><br>';
+
+            // Show request
+            echo '<img src="img/request_9.PNG"/><br><br>';
+        }
+        ?>
 
 </div>
+
+
+
+

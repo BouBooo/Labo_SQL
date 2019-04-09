@@ -9,20 +9,17 @@ if(isset($_POST['run']))
 {
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('   SELECT DISTINCT r.IdRace, r.raceName, 
-                                    (SELECT COUNT(a.IdAnimal) 
-                                        FROM animals a 
-                                        WHERE a.adopted = 1) as "total",
-                                    (SELECT COUNT(a.IdRace) 
-                                        FROM animals a 
-                                        WHERE a.IdRace = r.IdRace 
-                                        AND a.adopted = 0) as "races"
-                                FROM races r
-                                JOIN animals a
-                                ON a.IdRace = r.IdRace
-                                ORDER BY r.raceName    
-
-                            ');
+    $request = $db->prepare('       SELECT COUNT(a.IdAnimal) AS "Summer donations", 
+                                        (SELECT COUNT(a.IdAnimal)
+                                        FROM animals a
+                                        WHERE a.ArrivalDate NOT LIKE "____-06-__"
+                                        AND a.ArrivalDate NOT LIKE "____-07-__"
+                                        AND a.ArrivalDate NOT LIKE "____-08-__") AS "Other donations"
+                                    FROM animals a 
+                                    WHERE a.ArrivalDate LIKE "____-06-__"
+                                    OR a.ArrivalDate LIKE "____-07-__"
+                                    OR a.ArrivalDate LIKE "____-08-__"
+ ');
     $request->execute();
     $rows = $request->fetchAll();
 }
@@ -35,7 +32,7 @@ if(isset($_POST['run']))
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h2>See how many animals remain to be adopted for each breed</h2>
+    <h2>Determine when people are more likely to give (up) their pet</h2>
 
     <form action="" method="POST">
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
@@ -46,13 +43,11 @@ if(isset($_POST['run']))
         if($showResult)
         {
     ?>
-            
             <table class="table table-dark">
                 <thead>
                     <tr>
-                        <th>Id room</th>
-                        <th>Race</th>
-                        <th>Nbr to be adopted</th>
+                        <th>Summer donations </th>
+                        <th>Other donations</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,20 +56,27 @@ if(isset($_POST['run']))
             {
     ?>
                 <tr>
-                    <td><?= $row['IdRace']; ?></td>
-                    <td><?= $row['raceName']; ?></td>
-                    <td><?= $row['races']; ?></td>
-
+                    <td><?= $row['Summer donations']; ?></td>
+                    <td><?= $row['Other donations']; ?></td>
                 </tr>
-    <?php
-            } 
 
+    <?php
+            }  
         }
         else
         {
-            echo '<img width="" src="img/request_10.PNG"/><br><br>';
+            echo '<img src="img/request_1.PNG"/>';
         }
     ?>
             </table>
 
+            <br>
+            <br>
+
+            <ul><h5> Summer donations : </h5>
+                    <li>Juin</li> 
+                    <li>Juillet</li> 
+                    <li>Aout</li> 
+            </ul>
 </div>
+
