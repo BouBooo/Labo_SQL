@@ -134,7 +134,7 @@ if(isset($_POST['run']))
         }
         else
         {
-            echo '<img width="450" src="img/request_4.PNG"/><br><br>';
+            echo '<img width="600" src="img/request_4.PNG"/><br><br>';
         }
     ?>
             </table>

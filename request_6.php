@@ -121,6 +121,10 @@ if(isset($_POST['run']))
     ?>
             </table>
 
-            <?= $info ?>
+            <?php if($showResult)
+            {
+                echo $info;
+            }
+            ?>
 
 </div>

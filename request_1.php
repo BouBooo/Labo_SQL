@@ -32,7 +32,7 @@ if(isset($_POST['run']))
 
     <a class="btn btn-dark" href="index.php">Forward</a>
 
-    <h2>See animals who eat chicken and still are in chenils</h2>
+    <h2>Determine when people are more likely to give (up) their pet</h2>
 
     <form action="" method="POST">
         <input class="btn btn-info" type="submit" name="run" value="Run"/>
@@ -69,6 +69,9 @@ if(isset($_POST['run']))
         }
     ?>
             </table>
+
+            <br>
+            <br>
 
             <ul><h5> Summer donations : </h5>
                     <li>Juin</li> 

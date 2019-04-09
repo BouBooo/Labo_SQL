@@ -9,13 +9,19 @@ if(isset($_POST['run']))
 {
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('SELECT DISTINCT r.IdRace, r.raceName, 
-                                (SELECT COUNT(a.IdAnimal) FROM animals a WHERE a.adopted = 1) as "total",
-                                (SELECT COUNT(a.IdRace) FROM animals a WHERE a.IdRace = r.IdRace AND a.adopted = 0) as "races"
-                            FROM races r
-                            JOIN animals a
-                            ON a.IdRace = r.IdRace
-                            ORDER BY r.raceName                   
+    $request = $db->prepare('   SELECT DISTINCT r.IdRace, r.raceName, 
+                                    (SELECT COUNT(a.IdAnimal) 
+                                        FROM animals a 
+                                        WHERE a.adopted = 1) as "total",
+                                    (SELECT COUNT(a.IdRace) 
+                                        FROM animals a 
+                                        WHERE a.IdRace = r.IdRace 
+                                        AND a.adopted = 0) as "races"
+                                FROM races r
+                                JOIN animals a
+                                ON a.IdRace = r.IdRace
+                                ORDER BY r.raceName    
+
                             ');
     $request->execute();
     $rows = $request->fetchAll();
@@ -63,6 +69,10 @@ if(isset($_POST['run']))
     <?php
             } 
 
+        }
+        else
+        {
+            echo '<img width="" src="img/request_10.PNG"/><br><br>';
         }
     ?>
             </table>

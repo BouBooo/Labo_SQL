@@ -9,12 +9,13 @@ if(isset($_POST['run']))
 {
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('SELECT r.IdRoom, r.roomName, r.capacity, c.categoryName,
-                                (SELECT COUNT(idAnimal) FROM animals WHERE idRoom = r.IdRoom) as "amaux"
-                            FROM rooms r
-                            JOIN categories c
-                            ON c.IdCategory = r.IdCategory
-                            ORDER BY r.roomName                   
+    $request = $db->prepare('   SELECT r.IdRoom, r.roomName, r.capacity, c.categoryName,
+                                    (SELECT COUNT(idAnimal) FROM animals WHERE idRoom = r.IdRoom AND adopted = 0) as "amaux"
+                                FROM rooms r
+                                JOIN categories c
+                                ON c.IdCategory = r.IdCategory
+                                ORDER BY r.roomName   
+                                            
                             ');
     $request->execute();
     $rows = $request->fetchAll();
@@ -62,6 +63,10 @@ if(isset($_POST['run']))
 
     <?php
             }  
+        }
+        else
+        {
+            echo '<img width="" src="img/request_8.PNG"/><br><br>';
         }
     ?>
             </table>
