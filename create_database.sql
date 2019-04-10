@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `animals` (
   KEY `IdFood` (`IdFood`),
   KEY `IdChenil` (`IdChenil`),
   KEY `IdDonator` (`IdDonator`)
-) ENGINE=MyISAM AUTO_INCREMENT=43 DEFAULT CHARSET=latin1;
+) 
 
 
 DROP TABLE IF EXISTS `buyers`;
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `buyers` (
   PRIMARY KEY (`IdBuyer`),
   KEY `IdInvoice` (`IdInvoice`),
   KEY `IdAnimal` (`IdAnimal`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) 
 
 
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `IdCategory` int(11) NOT NULL AUTO_INCREMENT,
   `categoryName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`IdCategory`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) 
 
 
 
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `chenil` (
   PRIMARY KEY (`IdChenil`),
   KEY `IdCompany` (`IdCompany`),
   KEY `IdLocation` (`IdLocation`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) 
 
 
 DROP TABLE IF EXISTS `company`;
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `company` (
   `Description` varchar(255) DEFAULT NULL,
   `CreatedAt` date DEFAULT NULL,
   PRIMARY KEY (`IdCompany`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) 
 
 
 DROP TABLE IF EXISTS `donators`;
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `donators` (
   `IdAnimal` int(11) DEFAULT NULL,
   PRIMARY KEY (`IdDonator`),
   KEY `IdAnimal` (`IdAnimal`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) 
 
 
 DROP TABLE IF EXISTS `employees`;
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
   `IdCompany` int(11) DEFAULT NULL,
   PRIMARY KEY (`IdEmployee`),
   KEY `IdCompany` (`IdCompany`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+)
 
 
 
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `food_items` (
   `price` float(11,3) NOT NULL,
   `Composition` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`IdFood`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+)
 
 
 DROP TABLE IF EXISTS `invoice`;
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `invoice` (
   PRIMARY KEY (`IdInvoice`),
   KEY `IdClient` (`IdBuyer`),
   KEY `IdAnimal` (`IdAnimal`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) 
 
 
 DROP TABLE IF EXISTS `jobs`;
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `jobs` (
   `IdJob` int(11) NOT NULL AUTO_INCREMENT,
   `jobName` varchar(255) NOT NULL,
   PRIMARY KEY (`IdJob`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) 
 
 
 DROP TABLE IF EXISTS `location`;
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `location` (
   `IdCompany` int(11) DEFAULT NULL,
   PRIMARY KEY (`IdLocation`),
   KEY `IdCompany` (`IdCompany`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+)
 
 
 DROP TABLE IF EXISTS `races`;
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS `races` (
   `IdCategory` int(11) DEFAULT NULL,
   PRIMARY KEY (`IdRace`),
   KEY `IdCategory` (`IdCategory`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) 
 
 
 
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `rooms` (
   `IdCategory` int(11) NOT NULL,
   `IdChenil` int(11) DEFAULT NULL,
   PRIMARY KEY (`IdRoom`)
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) 
 
 
 

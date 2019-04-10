@@ -11,14 +11,15 @@ if(isset($_POST['run']))
 {
     $showResult = true;
     $db = Database::connect();
-    $request = $db->prepare('   SELECT a.IdAnimal, a.animalName, f.Composition, f.foodName, c.chenilName
-                                FROM animals a
-                                JOIN food_items f
-                                ON f.IdFood = a.IdFood
-                                JOIN chenil c
-                                ON c.IdChenil = a.IdChenil 
-                                WHERE f.IdFood = 2
-                                AND c.IdChenil = 3           
+    $request = $db->prepare('   SELECT COUNT(com.IdCompany) as "Company",
+                                    (SELECT COUNT(c.IdChenil) FROM chenil c) as "Chenils",
+                                    (SELECT COUNT(e.IdEmployee) FROM employees e) as "Employees",
+                                    (SELECT COUNT(j.IdJob) FROM jobs j) as "Jobs",
+                                    (SELECT COUNT(a.IdAnimal) FROM animals a) as "Animals",
+                                    (SELECT COUNT(cat.IdCategory) FROM categories cat) as "Categories",
+                                    (SELECT COUNT(r.IdRace) FROM races r) as "Races"
+                                FROM company com  
+
                             ');
     $request->execute();
     $rows = $request->fetchAll();
@@ -46,10 +47,13 @@ if(isset($_POST['run']))
             <table class="table table-dark">
                 <thead>
                     <tr>
-                        <th>Animal name</th>
-                        <th>Chenil</th>
-                        <th>Régime</th>
-                        <th>Composition</th>
+                        <th>Company</th>
+                        <th>Chenils</th>
+                        <th>Employees</th>
+                        <th>Jobs</th>
+                        <th>Animals</th>
+                        <th>Categories</th>
+                        <th>Races</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,10 +62,14 @@ if(isset($_POST['run']))
             {
     ?>
                 <tr>
-                    <td><?= $row['animalName']; ?></td>
-                    <td><?= $row['chenilName']; ?></td>
-                    <td><?= $row['foodName']; ?></td>
-                    <td><?= $row['Composition']; ?></td>
+                    <td><?= $row['Company']; ?></td>
+                    <td><?= $row['Chenils']; ?></td>
+                    <td><?= $row['Employees']; ?></td>
+                    <td><?= $row['Jobs']; ?></td>                    
+                    <td><?= $row['Animals']; ?></td>
+                    <td><?= $row['Categories']; ?></td>
+                    <td><?= $row['Races']; ?></td>
+
                 </tr>
 
     <?php
@@ -69,7 +77,7 @@ if(isset($_POST['run']))
         }
         else
         {
-            echo '<img src="img/request_7.PNG"/>';
+            echo '<img src="img/request1.PNG"/>';
         }
     ?>
             </table>
